@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Task Manager</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <h1>Task Manager</h1>
+
+    <form id="taskForm">
+        <label for="title">Title:</label><br>
+        <input type="text" id="title" name="title"><br>
+        <label for="description">Description:</label><br>
+        <textarea id="description" name="description"></textarea><br>
+        <button type="submit">Create Task</button>
+    </form>
+
+    <h2>Tasks:</h2>
+    <ul id="taskList"></ul>
+
+    <script>
+        // JavaScript to interact with APIs using axios
+        const baseURL = 'http://localhost:8000/api/tasks/';
+
+        function fetchTasks() {
+            axios.get(baseURL)
+                .then(response => {
+                    const tasks = response.data;
+                    const taskList = document.getElementById('taskList');
+                    taskList.innerHTML = '';
+                    tasks.forEach(task => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `${task.title} - ${task.description} 
+                                        [<a href="#" onclick="updateTask(${task.id})">Update</a>]
+                                        [<a href="#" onclick="deleteTask(${task.id})">Delete</a>]`;
+                        taskList.appendChild(li);
+                    });
+                })
+                .catch(error => console.error('Error fetching tasks', error));
+        }
+
+        function createTask(event) {
+            event.preventDefault();
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            axios.post(baseURL, { title, description })
+                .then(response => {
+                    console.log('Task created', response.data);
+                    fetchTasks();
+                })
+                .catch(error => console.error('Error creating task', error));
+        }
+
+        function updateTask(taskId) {
+            // Implement update functionality using PUT or PATCH request
+            console.log('Update task with ID:', taskId);
+        }
+
+        function deleteTask(taskId) {
+            // Implement delete functionality using DELETE request
+            console.log('Delete task with ID:', taskId);
+        }
+
+        document.getElementById('taskForm').addEventListener('submit', createTask);
+
+        // Initial fetch of tasks when page loads
+        fetchTasks();
+    </script>
+</body>
+</html>
